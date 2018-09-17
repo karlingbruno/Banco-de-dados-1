@@ -1,8 +1,8 @@
 /*Comandos em psql
-osql -U postgres -h localhost -d postgres
+psql -U postgres -h localhost -d postgres
 \c nome_banco conecta no banco
 \d mostra as tabels do nome_banco
-\d nome_tabela mostra a tabela especifica  
+\d nome_tabela mostra a tabela especifica
 */
 
 Create table competicao(
