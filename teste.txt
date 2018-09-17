@@ -1,3 +1,10 @@
+/*Comandos em psql
+osql -U postgres -h localhost -d postgres
+\c nome_banco conecta no banco
+\d mostra as tabels do nome_banco
+\d nome_tabela mostra a tabela especifica  
+*/
+
 Create table competicao(
   sigla varchar(5) not null constraint pk_competicao PRIMARY KEY,
   datai date not null,
@@ -10,7 +17,7 @@ Create table profissional(
   nome varchar(30) not null
 );
 Create table equipe(
-  codigo varchar(6) not null constraint pk_equipe PRIMARY KEY,
+  codigo integer not null constraint pk_equipe PRIMARY KEY,
   nome varchar(30) not null,
   matricula integer not null,
   constraint fk_equipe_profissional FOREIGN KEY (matricula) references profissional (matricula)
@@ -18,7 +25,7 @@ Create table equipe(
 Create table jogo(
   data date not null,
   codigoLocal integer not null ,
-  codigoVisi integet not null
+  codigoVisi integer not null,
   hora time not null,
   pontosLocal integer ,
   pontosVisi integer,
