@@ -12,7 +12,8 @@ create user nome_user password 'senha';
 // user : bruno password : bd1 database : teste
 UPDATE nome_tabela SET coluna = valor [condicao];Condição opcional
 DELETE FROM nome_tabela [condição];Condição opcional
-Condições : where [condição]; ex where cod = 6245;<> diferente
+Condições : where [condição]; ex where cod = 6245;
+<> diferente
 begin; (teste)
 end;(finaliza com sucesso)
 commit;(salva tudo feito no begin)
@@ -20,12 +21,23 @@ rollback;(ctrl-z)
 AND
 OR
 NOT
+usar muitos OR = where atributo in ('valor1','valor2',..);
+usar entre valor = where atributo between 'valor1' AND 'valor2';
+JOIN = junção de tabelas
+ex : tabela R e S = select R.b , S.y FROM R JOIN S on R.a = S.a;
+R.b e S.y = atributos para printar
+R.a e S.a = atributos em comum das tabelas R e S
+select R.b, S.y FROM R NATURAL JOIN S;
+atributo = null não existe
+atributo is null
 */
 Create table competicao(
   sigla varchar(5) not null constraint pk_competicao PRIMARY KEY,
   datai date not null,
   dataf date not null,
-  titulo varchar(30) not null
+  titulo varchar(30) not null,
+  codigo integer ,
+  constraint fk_equipe_participante FOREIGN KEY (codigo) references equipe(codigo)
 );
 Create table profissional(
   matricula integer not null constraint pk_profissional PRIMARY KEY,
@@ -68,4 +80,6 @@ Create table participa(
 insert into profissional (matricula,dataNasc,nome) values (1711100028,'20/08/1999','Bruno Karling');
 insert into equipe (codigo,nome,matricula) values (101,'Coringao',1711100028);
 insert into jogo (data,codigoLocal,codigoVisi,hora) values ('17/09/2018',101,102,'15:20');
-insert into plantel (matricula,codigo,dataAD,dataDES) values (171100028,101,'05/08/2007','06/09/2018'); */
+insert into plantel (matricula,codigo,dataAD,dataDES) values (171100028,101,'05/08/2007','06/09/2018'); 
+insert into participa (sigla,codigo) values ('TIMEA',101);
+*/
