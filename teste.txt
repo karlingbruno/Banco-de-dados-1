@@ -1,14 +1,26 @@
 /*Comandos em psql
-psql -U postgres -h localhost -d postgres
+psql -U postgres(usuario pra conectar no banco) -h localhost -d(database) postgres(nome do banco)
 \c nome_banco conecta no banco
 \d mostra as tabels do nome_banco
 \d nome_tabela mostra a tabela especifica
 insert into nome_tabela (lista de colunas separadas por virgula) value (valores)
 select * from nome_tabela mostra os valores da tabela
 id serial constraint... para criar id automatico
-
+ALTER TABLE nome_tabela add constraint nome_restrição PRIMARY KEY()
+ALTER TABLE nome_tabela alter collumn nome_col set not null / drop not null
+create user nome_user password 'senha';
+// user : bruno password : bd1 database : teste
+UPDATE nome_tabela SET coluna = valor [condicao];Condição opcional
+DELETE FROM nome_tabela [condição];Condição opcional
+Condições : where [condição]; ex where cod = 6245;<> diferente
+begin; (teste)
+end;(finaliza com sucesso)
+commit;(salva tudo feito no begin)
+rollback;(ctrl-z)
+AND
+OR
+NOT
 */
-
 Create table competicao(
   sigla varchar(5) not null constraint pk_competicao PRIMARY KEY,
   datai date not null,
