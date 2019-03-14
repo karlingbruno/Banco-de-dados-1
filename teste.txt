@@ -1,85 +1,28 @@
-/*Comandos em psql
-psql -U postgres(usuario pra conectar no banco) -h localhost -d(database) postgres(nome do banco)
-\c nome_banco conecta no banco
-\d mostra as tabels do nome_banco
-\d nome_tabela mostra a tabela especifica
-insert into nome_tabela (lista de colunas separadas por virgula) value (valores)
-select * from nome_tabela mostra os valores da tabela
-id serial constraint... para criar id automatico
-ALTER TABLE nome_tabela add constraint nome_restrição PRIMARY KEY()
-ALTER TABLE nome_tabela alter collumn nome_col set not null / drop not null
-create user nome_user password 'senha';
-// user : bruno password : bd1 database : teste
-UPDATE nome_tabela SET coluna = valor [condicao];Condição opcional
-DELETE FROM nome_tabela [condição];Condição opcional
-Condições : where [condição]; ex where cod = 6245;
-<> diferente
-begin; (teste)
-end;(finaliza com sucesso)
-commit;(salva tudo feito no begin)
-rollback;(ctrl-z)
-AND
-OR
-NOT
-usar muitos OR = where atributo in ('valor1','valor2',..);
-usar entre valor = where atributo between 'valor1' AND 'valor2';
-JOIN = junção de tabelas
-ex : tabela R e S = select R.b , S.y FROM R JOIN S on R.a = S.a;
-R.b e S.y = atributos para printar
-R.a e S.a = atributos em comum das tabelas R e S
-select R.b, S.y FROM R NATURAL JOIN S;
-atributo = null não existe
-atributo is null
-*/
-Create table competicao(
-  sigla varchar(5) not null constraint pk_competicao PRIMARY KEY,
-  datai date not null,
-  dataf date not null,
-  titulo varchar(30) not null,
-  codigo integer ,
-  constraint fk_equipe_participante FOREIGN KEY (codigo) references equipe(codigo)
-);
-Create table profissional(
-  matricula integer not null constraint pk_profissional PRIMARY KEY,
-  dataNasc date not null,
-  nome varchar(30) not null
-);
-Create table equipe(
-  codigo integer not null constraint pk_equipe PRIMARY KEY,
-  nome varchar(30) not null,
-  matricula integer not null,
-  constraint fk_equipe_profissional FOREIGN KEY (matricula) references profissional (matricula)
-);
-Create table jogo(
-  data date not null,
-  codigoLocal integer not null ,
-  codigoVisi integer not null,
-  hora time not null,
-  pontosLocal integer ,
-  pontosVisi integer,
-  constraint pk_jogo PRIMARY KEY (data,codigoLocal,codigoVisi) ,
-  constraint fk_equipe_local FOREIGN KEY (codigoLocal) references equipe (codigo),
-  constraint fk_equipe_visi FOREIGN KEY (codigoVisi) references equipe(codigo)
-);
-Create table plantel(
-  matricula integer not null,
-  codigo integer not null,
-  dataAD date not null,
-  dataDES date,
-  constraint fk_plantel_mat FOREIGN KEY (matricula) references profissional (matricula),
-  constraint fk_plantel_cod FOREIGN KEY (codigo) references equipe (codigo)
-);
-Create table participa(
-  sigla varchar(5) not null,
-  codigo integer not null,
-  constraint fk_participa_sig FOREIGN KEY (sigla) references competicao (sigla),
-  constraint fk_participa_cod FOREIGN KEy (codigo) references equipe (codigo)
-);
+CREATE OR REPLACE FUNCTION process_emp_audit() RETURNS TRIGGER
+AS $$
+ BEGIN
+ IF (TG_OP = 'DELETE') THEN
+ INSERT INTO  auditoria values (OLD.id,OLD.cpf,OLD.Num_Departamento,OLD.Salario,OLD.Supervisor,3,current_user,now());
+ RETURN OLD;
+ ELSIF (TG_OP = 'UPDATE') THEN
+  INSERT INTO  auditoria values (NEW.id,NEW.cpf,NEW.Num_Departamento,NEW.Salario,NEW.Supervisor,2,current_user,now());
+ RETURN NEW;
+ ELSIF (TG_OP = 'INSERT') THEN
+  INSERT INTO  auditoria values (NEW.id,NEW.cpf,NEW.Num_Departamento,NEW.Salario,NEW.Supervisor,1,current_user,now());
+ RETURN NEW;
+ END IF;
+ RETURN NULL;
+ END;
+$$ LANGUAGE plpgsql;
 
-/*  insert into competicao (sigla,datai,dataf,titulo) values ('TIMEA','16/09/18','17/09/18','copa fifa');
-insert into profissional (matricula,dataNasc,nome) values (1711100028,'20/08/1999','Bruno Karling');
-insert into equipe (codigo,nome,matricula) values (101,'Coringao',1711100028);
-insert into jogo (data,codigoLocal,codigoVisi,hora) values ('17/09/2018',101,102,'15:20');
-insert into plantel (matricula,codigo,dataAD,dataDES) values (171100028,101,'05/08/2007','06/09/2018'); 
-insert into participa (sigla,codigo) values ('TIMEA',101);
-*/
+CREATE TRIGGER emp
+AFTER INSERT OR UPDATE OR DELETE ON empregado
+ FOR EACH ROW EXECUTE PROCEDURE process_emp_audit();
+
+ Auditoria(empregado_ID int, cpf CHAR(12), Num_Departamento integer,
+ Salario DECIMAL(10,2 ), Supervisor varchar(50) , evento int, usuario varchar,
+ date date);
+
+EMPREGADO( id integer primary key, nome varchar(50), cpf varchar(15),
+Num_Departamento integer, Salario DECIMAL(10,2 ), Supervisor
+varchar(50));
