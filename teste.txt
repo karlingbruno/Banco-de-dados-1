@@ -26,3 +26,27 @@ AFTER INSERT OR UPDATE OR DELETE ON empregado
 EMPREGADO( id integer primary key, nome varchar(50), cpf varchar(15),
 Num_Departamento integer, Salario DECIMAL(10,2 ), Supervisor
 varchar(50));
+
+create table Projeto (codProj int not null PRIMARY KEY,tipo int, descricao varchar);
+
+create table Empregado (codEmp int not null PRIMARY KEY, nome varchar, categoria int, salario float);
+
+create table ProjetoEmpregado(codProj int not null , codEmp int not null, dataInicial date, dataFinal date,
+FOREIGN KEY (codProj) REFERENCES Projeto(codProj), FOREIGN KEY (codEmp) REFERENCES Empregado(codEmp));
+
+select e.codEmp, e.nome, e.salario, p.descricao	from empregado e, projeto p, projetoEmpregado pe  where e.salario>10000 AND e.codEmp=pe.codEmp AND pe.codProj=p.codProj;
+
+insert into projeto (codProj,tipo,descricao) values (1,23,'Eitaaaa');
+
+insert into empregado (codEmp,nome,categoria,salario) values (13,'Zezin',14,10500);
+
+insert into projetoEmpregado(codProj,codEmp,dataInicial,dataFinal)
+ values (1,13,'2019-02-15','2019-03-15');
+
+create view aula_view as select e.codEmp, e.nome, e.salario, p.descricao	from empregado e, projeto p, projetoEmpregado pe  where e.salario>10000 AND e.codEmp=pe.codEmp AND pe.codProj=p.codProj;
+
+create role user_teste login password 'senha';
+
+grant select on aula_view TO user_teste;
+
+psql -h localhost -d postgres -U user_teste
